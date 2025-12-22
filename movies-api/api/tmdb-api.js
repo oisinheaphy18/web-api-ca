@@ -6,7 +6,14 @@ export const getMovies = async () => {
     );
 
     if (!response.ok) {
-        throw new Error(response.json().message);
+        let message = "TMDB request failed";
+        try {
+            const errorJson = await response.json();
+            message = errorJson.status_message || message;
+        } catch (e) {
+            // ignore JSON parse errors
+        }
+        throw new Error(message);
     }
 
     return await response.json();
