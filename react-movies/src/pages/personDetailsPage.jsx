@@ -1,10 +1,10 @@
 // Part 1 — new page: actor details + filmography using parameterised endpoints
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  getPersonDetails,
-  getPersonMovieCredits,
-} from "../api/tmdb-api";
+import { getPersonDetails, getPersonMovieCredits } from "../api/tmdb-api";
+
+// ===== CA2: Expanded Movies API usage =====
+// updated person page to pull person details + credits via my Movies API endpoints
 
 const PersonDetailsPage = () => {
   const { id } = useParams(); // actor id
@@ -14,6 +14,10 @@ const PersonDetailsPage = () => {
 
   // Part 1 — load basic actor info
   useEffect(() => {
+    setPerson(null);
+    setCredits([]);
+    setErrorText("");
+
     getPersonDetails(id)
       .then((data) => setPerson(data))
       .catch((err) => setErrorText(err.message));

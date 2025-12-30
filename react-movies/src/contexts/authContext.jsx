@@ -1,5 +1,8 @@
 import React, { createContext, useEffect, useState } from "react";
 
+// ===== CA2: Users and Authentication (React) =====
+// added auth context so login/signup state is shared across the app and protected routes can work
+
 export const AuthContext = createContext(null);
 
 const readToken = () => {
@@ -36,6 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     writeToken(token);
+
     if (token) {
       const payload = decodeJwt(token);
       setUserName(payload?.username || payload?.userName || null);
@@ -52,12 +56,16 @@ export const AuthProvider = ({ children }) => {
     });
 
     const json = await response.json();
+
+    // my users API returns { success, msg } (not always { message })
     if (!response.ok) {
-      throw new Error(json?.message || "Login failed");
+      throw new Error(json?.msg || json?.message || "Login failed");
     }
 
+    // users API returns: "Bearer <token>"
     const bearer = json?.token || "";
     const clean = bearer.startsWith("Bearer ") ? bearer.substring(7) : bearer;
+
     setToken(clean);
   };
 
@@ -69,8 +77,9 @@ export const AuthProvider = ({ children }) => {
     });
 
     const json = await response.json();
+
     if (!response.ok) {
-      throw new Error(json?.message || "Signup failed");
+      throw new Error(json?.msg || json?.message || "Signup failed");
     }
   };
 
@@ -79,7 +88,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, userName, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        userName,
+        isAuthenticated: !!token,
+        login,
+        signup,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

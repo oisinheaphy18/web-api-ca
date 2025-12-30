@@ -1,15 +1,21 @@
+// ===== CA2: Users and Authentication =====
+// added register + login endpoint that returns a Bearer token for protected routes
+
 import express from 'express';
-import User from './userModel';
+import User from './userModel.js';
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router(); // eslint-disable-line
 
 // Get all users
-router.get('/', async (req, res) => {
-  const users = await User.find();
-  res.status(200).json(users);
-});
+router.get(
+  '/',
+  asyncHandler(async (req, res) => {
+    const users = await User.find();
+    res.status(200).json(users);
+  })
+);
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
@@ -32,8 +38,14 @@ async function authenticateUser(req, res) {
 
   const isMatch = await user.comparePassword(req.body.password);
   if (isMatch) {
-    const token = jwt.sign({ username: user.username }, process.env.SECRET);
-    res.status(200).json({ success: true, token: 'BEARER ' + token });
+    // create jwt and return standard Authorization format
+    const token = jwt.sign(
+      { username: user.username },
+      process.env.SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ success: true, token: 'Bearer ' + token });
   } else {
     res.status(401).json({ success: false, msg: 'Wrong password.' });
   }
@@ -49,6 +61,7 @@ router.post(
           .status(400)
           .json({ success: false, msg: 'Username and password are required.' });
       }
+
       if (req.query.action === 'register') {
         await registerUser(req, res);
       } else {

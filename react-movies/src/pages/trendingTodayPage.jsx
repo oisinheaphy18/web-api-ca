@@ -6,6 +6,9 @@ import Spinner from "../components/spinner";
 import { getTrendingToday } from "../api/tmdb-api";
 import PlaylistAdd from "../components/cardIcons/playlistAdd";
 
+// ===== CA2: Movies API integration =====
+// updated trending page to consume my Movies API endpoint via tmdb-api.jsx
+
 const TrendingTodayPage = () => {
   // Part 1 — load trending list with React Query
   const { data, error, isPending, isError } = useQuery({

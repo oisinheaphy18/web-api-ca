@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -10,8 +10,12 @@ import Menu from "@mui/material/Menu";
 import { useNavigate } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { AuthContext } from "../../contexts/authContext";
 
 const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
+
+// ===== CA2: Header changes for auth state =====
+// added different header links when logged in vs logged out, and added logout button
 
 const SiteHeader = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -20,18 +24,37 @@ const SiteHeader = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
 
+  const { isAuthenticated, logout } = useContext(AuthContext);
+
   // Part 2 — add Watchlist to main navigation
-  const menuOptions = [
+  const loggedOutMenuOptions = [
     { label: "Home", path: "/" },
-    { label: "Favorites", path: "/movies/favorites" },
-    { label: "Upcoming", path: "/movies/upcoming" },
-    { label: "Top Rated", path: "/movies/toprated" }, // (Part 1)
-    { label: "Watchlist", path: "/movies/watchlist" }, // Part 2
+    { label: "Upcoming", path: "/upcoming" },
+    { label: "Top Rated", path: "/toprated" },
+    { label: "Login", path: "/login" },
+    { label: "Signup", path: "/signup" }
   ];
+
+  const loggedInMenuOptions = [
+    { label: "Home", path: "/" },
+    { label: "Upcoming", path: "/upcoming" },
+    { label: "Top Rated", path: "/toprated" }, // (Part 1)
+    { label: "Favorites", path: "/movies/favorites" },
+    { label: "Watchlist", path: "/movies/watchlist" }, // Part 2
+    { label: "My Reviews", path: "/myreviews" }
+  ];
+
+  const menuOptions = isAuthenticated ? loggedInMenuOptions : loggedOutMenuOptions;
 
   const handleMenuSelect = (pageURL) => {
     setAnchorEl(null);
     navigate(pageURL);
+  };
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    logout();
+    navigate("/");
   };
 
   const handleMenu = (event) => {
@@ -45,6 +68,7 @@ const SiteHeader = () => {
           <Typography variant="h4" sx={{ flexGrow: 1 }}>
             TMDB Movies
           </Typography>
+
           {isMobile ? (
             <>
               <IconButton
@@ -56,6 +80,7 @@ const SiteHeader = () => {
               >
                 <MenuIcon />
               </IconButton>
+
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -70,6 +95,12 @@ const SiteHeader = () => {
                     {opt.label}
                   </MenuItem>
                 ))}
+
+                {isAuthenticated && (
+                  <MenuItem onClick={handleLogout}>
+                    Logout
+                  </MenuItem>
+                )}
               </Menu>
             </>
           ) : (
@@ -79,6 +110,12 @@ const SiteHeader = () => {
                   {opt.label}
                 </Button>
               ))}
+
+              {isAuthenticated && (
+                <Button color="inherit" onClick={handleLogout}>
+                  Logout
+                </Button>
+              )}
             </>
           )}
         </Toolbar>

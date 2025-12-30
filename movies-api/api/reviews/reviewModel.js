@@ -1,3 +1,6 @@
+// ===== CA2: Another API (Reviews model) =====
+// added Review model so reviews are stored in Mongo per user + per movie
+
 import mongoose from 'mongoose';
 
 const reviewSchema = new mongoose.Schema(

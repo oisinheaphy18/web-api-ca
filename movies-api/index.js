@@ -1,15 +1,19 @@
 // tasky-api/index.js
+// ===== CA2: Movies API + Reviews API wiring =====
+// added router mounts for movies + reviews so React can fetch via my own API instead of TMDB directly
+
 import dotenv from 'dotenv';
+dotenv.config(); // load env before any db/module reads it
+
 import express from 'express';
 import cors from 'cors';
-import './db/index.js';
-import usersRouter from './api/users/index.js';
-import authenticate from './authenticate/index.js';
 
+// IMPORTANT: db import must happen after dotenv.config() in ESM projects
+await import('./db/index.js');
+
+import usersRouter from './api/users/index.js';
 import moviesRouter from './api/movies/index.js';
 import reviewsRouter from './api/reviews/index.js';
-
-dotenv.config();
 
 const errHandler = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'production') {

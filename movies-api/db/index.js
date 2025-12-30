@@ -1,9 +1,14 @@
-import dotenv from 'dotenv';
+// ===== CA2: Mongo database connection =====
+// added central DB connection so my Users API and Reviews API can store user-specific data
+
 import mongoose from 'mongoose';
 
-dotenv.config();
+if (!process.env.MONGO_DB) {
+  console.log('MONGO_DB missing in .env');
+} else {
+  mongoose.connect(process.env.MONGO_DB);
+}
 
-mongoose.connect(process.env.MONGO_DB);
 const db = mongoose.connection;
 
 db.on('error', (err) => {

@@ -6,7 +6,10 @@ import { getMovie } from "../api/tmdb-api";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "../components/spinner";
 
-const MoviePage = () => {
+// ===== CA2: Movie details via my Movies API =====
+// updated movie details page to fetch movie data via my Express Movies API (which fetches from TMDB)
+
+const MovieDetailsPage = () => {
   const { id } = useParams();
 
   const { data: movie, error, isPending, isError } = useQuery({
@@ -32,4 +35,4 @@ const MoviePage = () => {
   );
 };
 
-export default MoviePage;
+export default MovieDetailsPage;

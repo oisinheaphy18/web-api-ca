@@ -1,10 +1,13 @@
+// ===== CA2: Another API (Reviews) =====
+// added fetch helpers for my Reviews API so reviews are stored in Mongo and linked to logged-in users
+
 const handleResponse = (response) => {
   if (!response.ok) {
     return response.text().then((text) => {
       let message = "Something went wrong";
       try {
         const error = JSON.parse(text);
-        message = error.message || error.error || message;
+        message = error.message || error.msg || error.error || message;
       } catch (e) {
         if (text) message = text;
       }
